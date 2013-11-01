@@ -9,7 +9,8 @@ Config { font = "-*-terminus-medium-*-*-*-14*-*-*-*-*-*-*"
        , allDesktops = True
        , overrideRedirect = True
        , hideOnStart = False
-       , commands = [ Run Network "eth0" ["-L","0","-H","32","--normal","green","--high","red"] 10
+       , commands = [ Run Weather "EDDI" ["-t"," <tempC>C","-L","64","-H","77","--normal","green","--high","red","--low","lightblue"] 36000 
+		    , Run Network "eth0" ["-L","0","-H","32","--normal","green","--high","red"] 10
                     , Run Cpu ["-L","3","-H","50","--normal","green","--high","red"] 10
                     , Run Memory ["-t","Mem: <usedratio>%"] 10
                     , Run Swap [] 10
@@ -19,4 +20,4 @@ Config { font = "-*-terminus-medium-*-*-*-14*-*-*-*-*-*-*"
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "<fc=#ee9a00>%date%</fc> %StdinReader% %cpu% | %memory% * %swap% | %eth0%" }
+       , template = "<fc=#ee9a00>%date%</fc> %StdinReader% %cpu% | %memory% * %swap% | %eth0% | Berlin%EDDI%" }
