@@ -1,9 +1,9 @@
-Config { font = "-*-terminus-medium-*-*-*-14*-*-*-*-*-*-*"
+Config { font = "-*-clean-medium-r-*-*-12-*-*-*-*-*-*-*"
        , borderColor = "black"
        , border = TopB
        , bgColor = "black"
        , fgColor = "grey"
-       , position = Bottom
+       , position = Top
        , lowerOnStart = True
        , persistent = False
        , allDesktops = True
