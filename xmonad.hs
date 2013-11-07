@@ -57,6 +57,13 @@ fullscreenMPlayer = className =? "MPlayer" --> do
         liftX  $ withScreen s view
         return . Endo $ view ws . shiftWin ws w
 
+myLayout = avoidStruts tiled ||| Mirror tiled ||| tiled ||| noBorders Full
+  where
+     tiled   = Tall nmaster delta ratio
+     nmaster = 1
+     ratio   = 1/2
+     delta   = 3/100
+
 main = do
     nScreens    <- countScreens
     hs          <- mapM (spawnPipe . xmobarCommand) [0 .. nScreens-1]
@@ -68,7 +75,8 @@ main = do
         focusedBorderColor      = bright,
         modMask                 = mod4Mask,
         keys                    = keyBindings,
-        layoutHook              = magnifierOff $ avoidStruts (GridRatio 0.9) ||| noBorders Full,
+        ---layoutHook              = magnifierOff $ avoidStruts (GridRatio 0.9) ||| noBorders Full,
+        layoutHook              = myLayout,
         manageHook              = floatAll ["Wine"]
                                   <+> (title =? "CGoban: Main Window" --> doF sinkFocus)
                                   <+> (isFullscreen --> doFullFloat)
@@ -77,7 +85,7 @@ main = do
                                   <+> manageSpawn,
         logHook                 = mapM_ dynamicLogWithPP $ zipWith pp hs [0..nScreens],
         startupHook             = setWMName "LG3D" -- gotta keep this until all the machines I use have the version of openjdk that respects _JAVA_AWT_WM_NONREPARENTING`
-        }
+    }
 
 keyBindings conf = let m = modMask conf in fromList $ [
   ((mod1Mask               , xK_r     ), spawnHere launcher),
@@ -93,12 +101,14 @@ keyBindings conf = let m = modMask conf in fromList $ [
   ((m .|. shiftMask        , xK_j     ), windows swapUp),
   ((m                      , xK_k     ), windows focusDown),
   ((m .|. shiftMask        , xK_k     ), windows swapDown),
+  ((m                      , xK_h     ), sendMessage Shrink), -- %! Shrink the master area
+  ((m                      , xK_l     ), sendMessage Expand), -- %! Expand the master area
   ((m                      , xK_a     ), windows focusMaster),
   ((m .|. shiftMask        , xK_a     ), windows swapMaster),
-  ((m                      , xK_l     ), withScreen 0 view),
-  ((m .|. shiftMask        , xK_l     ), withScreen 0 viewShift),
-  ((m                      , xK_h     ), withScreen 1 view),
-  ((m .|. shiftMask        , xK_h     ), withScreen 1 viewShift),
+  ((m                      , xK_m     ), withScreen 0 view),
+  ((m .|. shiftMask        , xK_m     ), withScreen 0 viewShift),
+  ((m                      , xK_n     ), withScreen 1 view),
+  ((m .|. shiftMask        , xK_n     ), withScreen 1 viewShift),
   ((m                      , xK_u     ), centerMouse),
   ((m .|. shiftMask        , xK_u     ), statusBarMouse)
   ] ++ [
@@ -109,7 +119,6 @@ keyBindings conf = let m = modMask conf in fromList $ [
   ]
 
 xmobarCommand (S s) = unwords ["xmobar", "-x", show s, "~/.xmobarrc"]
-
 pp h s = marshallPP s defaultPP {
     ppCurrent           = color "white",
     ppVisible           = color "white",
@@ -120,4 +129,3 @@ pp h s = marshallPP s defaultPP {
     ppOutput            = hPutStrLn h
     }
     where color c = xmobarColor c ""
-          
